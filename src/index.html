@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>梅香寄北堂</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { width: min(100vw, 177.78vh); height: min(56.25vw, 100vh); display: block; }
+  #play { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+          color: #f3ead6; font: 28px serif; letter-spacing: .3em; cursor: pointer; background: rgba(0,0,0,.35); }
+  body.record #play { display: none; }
+</style>
+</head>
+<body>
+<canvas id="film" width="1920" height="1080"></canvas>
+<div id="play">▶ 点击播放</div>
+<audio id="bgm" src="music.m4a" preload="auto"></audio>
+<script src="content.js"></script>
+<script src="film.js"></script>
+<script>
+  // 预览：点击后随音乐实时播放。录制时（?record）由脚本逐帧调用 FILM.render(t)。
+  if (new URLSearchParams(location.search).has('record')) {
+    document.body.classList.add('record');
+  } else {
+    const audio = document.getElementById('bgm');
+    const btn = document.getElementById('play');
+    let t0 = 0, playing = false;
+    const clock = () => (audio.readyState > 0 && !audio.paused) ? audio.currentTime : (performance.now() - t0) / 1000;
+    const loop = () => {
+      if (!playing) return;
+      const t = clock();
+      FILM.render(Math.min(t, FILM.duration));
+      if (t < FILM.duration) requestAnimationFrame(loop); else { playing = false; btn.style.display = 'flex'; }
+    };
+    btn.onclick = async () => {
+      await FILM.ready;
+      btn.style.display = 'none';
+      audio.currentTime = 0;
+      t0 = performance.now();
+      audio.play().catch(() => {});
+      playing = true; loop();
+    };
+  }
+</script>
+</body>
+</html>
