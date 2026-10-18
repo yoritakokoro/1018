@@ -230,19 +230,28 @@ def compose(tl):
     mix = Mix(dur)
     O, L, P, E = tl["opening"], tl["letter"], tl["poem"], tl["ending"]
 
-    # ---- 开场：散板
+    # ---- 开场：散板。卷轴展开时一串刮奏，题字每落一笔一个音
     mix.pad([38, 45, 50], 0.3, O["end"] - 0.3, gain=0.10, attack=3.0, release=3.0)
-    gliss(mix, 1.2, 50, 86, 1.5, 0.18, 0.5)
-    mix.note(jp("1'"), 3.3, 0.6, vib=0.007)
-    mix.note(jp("5"), 4.5, 0.45)
-    for k, tok in enumerate(["5", "6", "1'", "2'", "3'"]):  # 题字每落一笔，一个音
-        mix.note(jp(tok), 5.4 + k * 0.55, 0.5 + 0.04 * k, vib=0.004 if k == 4 else 0)
+    u0, u1 = O["unroll"]
+    gliss(mix, u0 + 0.1, 50, 86, (u1 - u0) * 0.8, 0.16, 0.48)
+    g0 = O["growStart"]
+    mix.note(jp("1'"), g0, 0.6, vib=0.007)
+    mix.note(jp("5"), g0 + 1.3, 0.45)
+    mix.note(jp("3"), g0 + 2.6, 0.4, vib=0.004)
+    for k, (tok, tt) in enumerate(zip(["5", "6", "1'", "2'", "3'"], O["titleTimes"])):
+        mix.note(jp(tok), tt, 0.5 + 0.04 * k, vib=0.004 if k == 4 else 0)
     mix.note(38, O["titleSeal"], 0.7)
     mix.note(jp("5'"), O["titleSeal"] + 0.05, 0.35)
     for k, tok in enumerate(["5'", "3'", "2'", "1'"]):
-        mix.note(jp(tok), 9.5 + k * 0.3, 0.32)
-    mix.note(jp("1"), 11.2, 0.4)
-    mix.note(jp("5"), 11.25, 0.35, vib=0.004)
+        mix.note(jp(tok), O["dedStart"] + k * 0.3, 0.32)
+    mix.note(jp("1"), O["dedStart"] + 1.7, 0.4)
+    mix.note(jp("5"), O["dedStart"] + 1.75, 0.35, vib=0.004)
+    # 题字随风而去：轻轻一道下行刮奏
+    gliss(mix, O["fadeOut"][0], 62, 88, 1.3, 0.3, 0.1, down=True)
+    # 雁阵飞过月亮
+    gm = O["geeseMoon"]
+    for k, tok in enumerate(["6'", "5'", "3'", "5'", "2'"]):
+        mix.note(jp(tok), gm - 1.2 + k * 0.45, 0.3 - 0.02 * k, vib=0.005 if k == 4 else 0)
 
     # ---- 信：28 小节，4/4
     l0, l1 = O["end"], L["end"]
@@ -307,6 +316,11 @@ def compose(tl):
     mix.note(38, hb_end + 0.1, 0.6)
     mix.note(jp("1'"), hb_end + 2.6, 0.4, vib=0.005)
     mix.pad([38, 50, 57, 62, 66], hb_end - 0.5, dur - hb_end + 1.5, gain=0.09, attack=1.5, release=3.0)
+    # 卷轴合上
+    c0, c1, c2 = E["close"]
+    mix.note(38, c1, 0.5)
+    mix.note(jp("5"), c1 + 0.05, 0.3)
+    mix.note(jp("1''"), c2 - 0.4, 0.22)
     return mix
 
 
@@ -337,7 +351,7 @@ def main():
     n = int((tl["duration"] + 0.5) * SR)
     L, R = L[:n], R[:n]
     # 收尾淡出与画面同步
-    fade_from = tl["ending"]["end"] - 4.5
+    fade_from = tl["ending"]["close"][2] - 0.5
     f = np.clip((tl["duration"] - np.arange(n) / SR) / (tl["duration"] - fade_from), 0, 1) ** 1.5
     L, R = L * f, R * f
     # 响度：RMS 约 -19 dBFS，柔和限幅，峰值 -1 dBFS

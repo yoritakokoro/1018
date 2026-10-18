@@ -16,6 +16,11 @@ window.CONTENT = {
     ["妈妈，祝你生日快乐！附小诗一首："]
   ],
 
+  // 每页信笺左下角的小画，与该页内容呼应：
+  // boat 孤帆远影（身在远方） home 灯火炊烟（家） bamboo 新竹（成长）
+  // sea 三亚椰风海韵 peach 寿桃（安康） lantern 灯笼（生日快乐）
+  letterArt: ["boat", "home", "bamboo", "sea", "peach", "lantern"],
+
   // 诗：每联两句
   poem: [
     ["金风送桂满庭芳", "尺素题诗寄北堂"],

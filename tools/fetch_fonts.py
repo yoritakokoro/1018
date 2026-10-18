@@ -22,8 +22,8 @@ def used_chars() -> str:
     src = (ROOT / "src" / "content.js").read_text(encoding="utf-8")
     # 取出所有字符串字面量里的字符
     chars = set("".join(re.findall(r'"([^"]*)"', src)))
-    chars |= set("妈妈生日快乐欣宜敬上，。！：、· ")
-    return "".join(sorted(c for c in chars if c.strip()))
+    chars |= set("妈妈生日快乐欣宜敬上，。！：、· 福")  # 福：灯笼上的字
+    return "".join(sorted(c for c in chars if c.strip() and ord(c) > 127))
 
 
 def fetch(url: str) -> bytes:
