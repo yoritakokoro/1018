@@ -51,6 +51,16 @@ def cut(im, box, pad=6, scale=1.0):
     return c
 
 
+def feather(im, edge):
+    """四边羽化，去掉从素材图上裁下来的直边。"""
+    a = np.array(im).astype(np.float32)
+    h, w = a.shape[:2]
+    fx = np.clip(np.minimum(np.arange(w), w - 1 - np.arange(w)) / edge, 0, 1)
+    fy = np.clip(np.minimum(np.arange(h), h - 1 - np.arange(h)) / edge, 0, 1)
+    a[..., 3] *= np.outer(fy, fx) ** 1.5
+    return Image.fromarray(a.astype(np.uint8))
+
+
 def main():
     # ---- 整幅背景（16:9）
     paper = load("bg_paper_torn")
@@ -90,8 +100,8 @@ def main():
     save(clean(load("b3_petal_swirl")), "swirl")
     save(cut(load("clouds_gold"), (3, 64, 1446, 1000), scale=0.7), "clouds")
     ink = load("b3_ink_clouds")
-    save(cut(ink, (0, 50, 1672, 556), pad=0), "inkcloud1")
-    save(cut(ink, (0, 493, 1672, 897), pad=0), "inkcloud2")
+    save(feather(cut(ink, (0, 50, 1672, 556), pad=0), 90), "inkcloud1")
+    save(feather(cut(ink, (0, 493, 1672, 897), pad=0), 90), "inkcloud2")
 
     # ---- 精灵：大雁、雪花、枫叶、挂饰、印、花角
     geese = load("geese")

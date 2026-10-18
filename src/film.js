@@ -586,7 +586,7 @@ function drawInkSweep(g, t, t0, dur) {
   if (t < t0 || t > t0 + dur) return;
   const u = (t - t0) / dur;
   g.save();
-  g.globalAlpha = Math.sin(Math.PI * u) * 0.9;
+  g.globalAlpha = Math.sin(Math.PI * u) * 0.8;
   const a = IMG.inkcloud1, b = IMG.inkcloud2, s = 1.5;
   g.drawImage(a, lerp(-a.width * s, W, u), 120, a.width * s, a.height * s);
   g.drawImage(b, lerp(W, -b.width * s, u), 560, b.width * s, b.height * s);
@@ -750,7 +750,7 @@ function makeParticles() {
       ? { t0: t, x: 1940 + rnd() * 60, y: -60 + rnd() * 760, vx: -70 - rnd() * 90, vy: 14 + rnd() * 30 }
       : { t0: t, x: 40 + rnd() * 560, y: 760 + rnd() * 260, vx: 60 + rnd() * 110, vy: -12 - rnd() * 30 });
     Object.assign(list.gui[list.gui.length - 1],
-      { amp: 10 + rnd() * 20, f: 0.4 + rnd() * 0.8, ph: rnd() * 6.28, spin: (rnd() - 0.5) * 5, r: 3.6 + rnd() * 3, life: 30 });
+      { amp: 10 + rnd() * 20, f: 0.4 + rnd() * 0.8, ph: rnd() * 6.28, spin: (rnd() - 0.5) * 5, r: 3.6 + rnd() * 3, life: opening ? 30 : 9 });
   });
   spawn(snowRate, t => {
     list.snow.push({ t0: t, x: rnd() * (W + 300), y: -30, vx: -14 - rnd() * 18, vy: 36 + rnd() * 44,
@@ -772,7 +772,7 @@ function makeParticles() {
       for (let k = 0; k < n; k++) {
         list.scatter.push({ t0: t0 + rnd() * (t1 - t0) * 0.7, x: gl.x + (rnd() - 0.5) * 24, y: gl.y + (rnd() - 0.5) * 24,
           vx: -70 - rnd() * 140, vy: -28 + rnd() * 50, amp: 8 + rnd() * 18, f: 0.4 + rnd() * 0.6, ph: rnd() * 6.28,
-          spin: (rnd() - 0.5) * 5, flip: 2 + rnd() * 3, r: 5 + rnd() * 3.5, life: 4.5 });
+          spin: (rnd() - 0.5) * 4, flip: 1.5 + rnd() * 2, r: 8 + rnd() * 4, life: 4.5 });
       }
     }
   };
@@ -822,7 +822,7 @@ function drawParticles(g, list, t) {
     const [x, y] = drift(p, a);
     if (x < -20 || x > W + 80 || y > H + 20 || y < -40) continue;
     g.save(); g.translate(x, y); g.rotate(p.ph + p.spin * a);
-    g.globalAlpha = clamp(a * 2);
+    g.globalAlpha = clamp(a * 2) * clamp((p.life - a) / 2);
     g.fillStyle = 'rgba(226,160,40,0.92)';
     for (let k = 0; k < 4; k++) {
       g.rotate(Math.PI / 2);

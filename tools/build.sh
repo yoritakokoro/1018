@@ -13,6 +13,6 @@ python3 tools/music.py
 "$FF" -y -loglevel error -i build/music.wav -c:a aac -b:a 160k src/music.m4a   # 网页预览用
 node tools/render.mjs "$FRAMES" 30 4
 "$FF" -y -loglevel error -framerate 30 -i "$FRAMES/%05d.jpg" -i build/music.wav \
-  -c:v libx264 -preset slow -crf 20 -pix_fmt yuv420p -profile:v high -level 4.1 \
+  -c:v libx264 -preset slow -crf 25 -pix_fmt yuv420p -profile:v high -level 4.1 \
   -c:a aac -b:a 192k -shortest -movflags +faststart "$OUT"
 echo "完成：$OUT"
