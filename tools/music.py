@@ -248,6 +248,10 @@ def compose(tl):
     mix.note(jp("5"), O["dedStart"] + 1.75, 0.35, vib=0.004)
     # 题字随风而去：轻轻一道下行刮奏
     gliss(mix, O["fadeOut"][0], 62, 88, 1.3, 0.3, 0.1, down=True)
+    # 信封随花雨落下
+    ev = O["envelope"]
+    mix.note(jp("3'"), ev - 0.3, 0.3)
+    mix.note(jp("6"), ev, 0.34, vib=0.004)
     # 雁阵飞过月亮
     gm = O["geeseMoon"]
     for k, tok in enumerate(["6'", "5'", "3'", "5'", "2'"]):
